@@ -1,4 +1,20 @@
-# Gmail Inbox Briefing
+# Gmail MCP agent with PydanticAI: Gmail Inbox Briefing
+
+<!-- weavz:discovery:start -->
+
+Use Gmail with PydanticAI through Weavz MCP. This gmail inbox briefing example returns a report from bounded app reads with source references.
+
+**Framework:** PydanticAI · **Language:** Python · **MCP modes:** Tool Mode and Code Mode
+
+Use another framework:
+
+- [Gmail MCP with OpenAI Agents SDK Python](https://github.com/weavz/weavz-openai-agents-python/blob/main/docs/app-recipes.md#gmail-mcp-with-openai-agents-sdk-python)
+- [Gmail MCP with PydanticAI Python](https://github.com/weavz/weavz-pydantic-ai/blob/main/docs/app-recipes.md#gmail-mcp-with-pydanticai-python)
+- [Gmail MCP with Google ADK Python](https://github.com/weavz/weavz-google-adk-python/blob/main/docs/app-recipes.md#gmail-mcp-with-google-adk-python)
+
+[MCP app and framework directory](https://github.com/weavz/mcp-examples/blob/main/docs/integrations.md) · [All examples](https://github.com/weavz/mcp-examples) · [Weavz MCP guide](https://weavz.io/docs/guides/agent-framework-examples)
+
+<!-- weavz:discovery:end -->
 
 Prepare a prioritized brief for the messages returned by this Gmail search. Identify explicit deadlines and follow-ups, then separate them from informational updates.
 
