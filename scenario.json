@@ -1,0 +1,130 @@
+{
+  "id": "gmail-inbox-briefing",
+  "title": "Gmail Inbox Briefing",
+  "prompt": "Prepare a prioritized brief for the messages returned by this Gmail search. Identify explicit deadlines and follow-ups, then separate them from informational updates.",
+  "instructions": "Use only the requested query and its returned page. list_messages provides summaries, not full bodies: call get_message for every returned ID before summarizing. State the query and result limit so this is not mistaken for an account-wide review. Do not paginate, send or draft email, change labels, or infer intent beyond the body. Distinguish explicit requests and dates from prioritization.",
+  "fixture_summary": "Two synthetic messages: a supplier approval request with a Friday deadline and an informational release note. Full-message reads provide bodies for both returned IDs.",
+  "inputs": {
+    "query": "in:inbox newer_than:3d",
+    "max_results": 2
+  },
+  "steps": [
+    {
+      "id": "search_inbox",
+      "alias": "inbox",
+      "integration": "gmail",
+      "action": "list_messages",
+      "tool": "inbox__list_messages",
+      "arguments": {
+        "query": "in:inbox newer_than:3d",
+        "maxResults": 2
+      },
+      "records": [
+        {
+          "id": "gmail-msg-101",
+          "app": "Gmail",
+          "title": "Supplier approval needed before Friday",
+          "detail": "Summary: Operations asks whether PO-204 is approved before Friday. Synthetic message received 2026-11-13T09:20:00Z.",
+          "url": "https://example.com/mail/gmail-msg-101",
+          "thread_id": "gmail-thread-51",
+          "received_at": "2026-11-13T09:20:00Z",
+          "urgency": "urgent",
+          "action_required": true,
+          "follow_up_minutes": 12
+        },
+        {
+          "id": "gmail-msg-102",
+          "app": "Gmail",
+          "title": "November product release notes",
+          "detail": "Summary: Product team shares a release announcement; no response requested. Synthetic message received 2026-11-13T14:05:00Z.",
+          "url": "https://example.com/mail/gmail-msg-102",
+          "thread_id": "gmail-thread-52",
+          "received_at": "2026-11-13T14:05:00Z",
+          "urgency": "low",
+          "action_required": false,
+          "follow_up_minutes": 0
+        }
+      ]
+    },
+    {
+      "id": "read_supplier_message",
+      "alias": "inbox",
+      "integration": "gmail",
+      "action": "get_message",
+      "tool": "inbox__get_message",
+      "arguments": {
+        "messageId": "gmail-msg-101",
+        "format": "full"
+      },
+      "records": [
+        {
+          "id": "gmail-msg-101",
+          "app": "Gmail",
+          "title": "Supplier approval needed before Friday",
+          "detail": "Full synthetic body: Please confirm whether PO-204 is approved by Friday, 2026-11-20. The quoted price can be held until then. No reply has been sent.",
+          "url": "https://example.com/mail/gmail-msg-101",
+          "thread_id": "gmail-thread-51",
+          "received_at": "2026-11-13T09:20:00Z",
+          "urgency": "urgent",
+          "action_required": true,
+          "follow_up_minutes": 12,
+          "explicit_deadline": "2026-11-20"
+        }
+      ]
+    },
+    {
+      "id": "read_release_message",
+      "alias": "inbox",
+      "integration": "gmail",
+      "action": "get_message",
+      "tool": "inbox__get_message",
+      "arguments": {
+        "messageId": "gmail-msg-102",
+        "format": "full"
+      },
+      "records": [
+        {
+          "id": "gmail-msg-102",
+          "app": "Gmail",
+          "title": "November product release notes",
+          "detail": "Full synthetic body: The November release is available to review. Sender says no action is needed this week.",
+          "url": "https://example.com/mail/gmail-msg-102",
+          "thread_id": "gmail-thread-52",
+          "received_at": "2026-11-13T14:05:00Z",
+          "urgency": "low",
+          "action_required": false,
+          "follow_up_minutes": 0
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "returned_messages_requiring_action",
+      "op": "count",
+      "where": {
+        "action_required": true
+      }
+    },
+    {
+      "name": "urgent_messages",
+      "op": "count",
+      "where": {
+        "urgency": "urgent"
+      }
+    },
+    {
+      "name": "estimated_follow_up_minutes",
+      "op": "sum",
+      "field": "follow_up_minutes",
+      "where": {
+        "action_required": true
+      }
+    }
+  ],
+  "expected_metrics": {
+    "returned_messages_requiring_action": 1,
+    "urgent_messages": 1,
+    "estimated_follow_up_minutes": 12
+  }
+}
